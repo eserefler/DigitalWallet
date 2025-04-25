@@ -1,11 +1,15 @@
 package com.es.digitalwallet.domain.entity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.Getter;
+import com.es.digitalwallet.domain.enums.Currency;
 
-import java.util.Currency;
 import java.util.UUID;
 
+@Entity
+@Table(name = "wallet")
 @Getter
 public class Wallet  extends BaseEntity{
 
@@ -13,7 +17,7 @@ public class Wallet  extends BaseEntity{
     private UUID customerId;
 
     @Column(name = "wallet_name", nullable = false)
-    private UUID walletName;
+    private String walletName;
 
     @Column(name = "currency", nullable = false)
     private Currency curency;
@@ -24,7 +28,15 @@ public class Wallet  extends BaseEntity{
     @Column(name = "active_for_withdraw", nullable = false)
     private Boolean activeForWithdraw;
 
-    public static Wallet of(UUID customerId, UUID walletName, Currency currency, Boolean activeForShopping, Boolean activeForWithdraw) {
+    /*
+     @Column(name = "balance", nullable = false)
+     private long balance;
+
+     @Column(name = "usable_balance", nullable = false)
+     private long usableBalance;
+     */
+
+    public static Wallet of(UUID customerId, String walletName, Currency currency, Boolean activeForShopping, Boolean activeForWithdraw) {
         Wallet wallet = new Wallet();
         wallet.customerId = customerId;
         wallet.walletName = walletName;

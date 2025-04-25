@@ -4,10 +4,14 @@ import com.es.digitalwallet.domain.enums.OppositePartyType;
 import com.es.digitalwallet.domain.enums.TransactionStatus;
 import com.es.digitalwallet.domain.enums.TransactionType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.Getter;
 
 import java.util.UUID;
 
+@Entity
+@Table(name = "transaction")
 @Getter
 public class Transaction  extends BaseEntity{
     @Column(name = "wallet_id", nullable = false)

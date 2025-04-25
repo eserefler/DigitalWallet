@@ -1,8 +1,12 @@
 package com.es.digitalwallet.domain.entity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.Getter;
 
+@Entity
+@Table(name = "customer")
 @Getter
 public class Customer extends BaseEntity {
 
