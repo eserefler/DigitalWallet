@@ -50,15 +50,16 @@ public class Wallet extends BaseEntity {
         return wallet;
     }
 
-    public void deposit(Transaction newTransaction) {
-        if (newTransaction.isApproved()) {
-            this.balance += newTransaction.getAmount();
-            this.usableBalance += newTransaction.getAmount();
-        } else if (newTransaction.isPending()) {
-            this.balance += newTransaction.getAmount();
-        }
+    public void deposit(long amount, OppositePartyType oppositePartyType, String oppositeParty) {
+        var depositTransaction = Transaction.of(this,amount, TransactionType.DEPOSIT,oppositePartyType,oppositeParty);
+        this.transactions.add(depositTransaction);
 
-        this.transactions.add(newTransaction);
+        if (depositTransaction.isApproved()) {
+            this.balance += depositTransaction.getAmount();
+            this.usableBalance += depositTransaction.getAmount();
+        } else if (depositTransaction.isPending()) {
+            this.balance += depositTransaction.getAmount();
+        }
     }
 
     public void withdraw(long amount, OppositePartyType oppositePartyType, String oppositeParty) {

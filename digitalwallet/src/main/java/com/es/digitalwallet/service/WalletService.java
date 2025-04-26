@@ -1,9 +1,6 @@
 package com.es.digitalwallet.service;
 
-import com.es.digitalwallet.domain.entity.Transaction;
 import com.es.digitalwallet.domain.entity.Wallet;
-import com.es.digitalwallet.domain.enums.OppositePartyType;
-import com.es.digitalwallet.domain.enums.TransactionType;
 import com.es.digitalwallet.mapper.WalletMapper;
 import com.es.digitalwallet.model.request.CreateWalletRequest;
 import com.es.digitalwallet.model.request.DepositToWalletRequest;
@@ -14,7 +11,6 @@ import com.es.digitalwallet.repository.CustomerRepository;
 import com.es.digitalwallet.repository.WalletRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.Currency;
 import java.util.UUID;
 
 public interface WalletService {
@@ -26,7 +22,7 @@ public interface WalletService {
 
     GetWalletTransactionsResponse getWalletTransactions(UUID walletId);
 
-    void withdraw(UUID walletId, WithdrawRequest request);
+    void withdrawFromWallet(UUID walletId, WithdrawRequest request);
 
     @Service
     class WalletServiceImpl implements WalletService {
@@ -63,25 +59,21 @@ public interface WalletService {
             if (wallet == null) {
                 throw new IllegalArgumentException("Wallet not found");
             }
-
-            var newTransaction = Transaction.of(wallet, request.getAmount(), TransactionType.DEPOSIT, request.getOppositeParty(), request.getSource());
-            wallet.deposit(newTransaction);
-
+            wallet.deposit(request.getAmount(), request.getOppositeParty(), request.getSource());
             walletRepository.save(wallet);
         }
 
-        public GetWalletTransactionsResponse getWalletTransactions(UUID walletId) {
-            var wallet = walletRepository.findById(walletId);
-            return WalletMapper.toGetWalletTransactionsResponse(wallet.getTransactions(),wallet.getCurency().toString());
-        }
-
-        public void withdraw(UUID walletId, WithdrawRequest request) {
+        public void withdrawFromWallet(UUID walletId, WithdrawRequest request) {
             var wallet = walletRepository.findById(walletId);
             if (wallet == null) {
                 throw new IllegalArgumentException("Wallet not found");
             }
             wallet.withdraw(request.getAmount(), request.getOppositeParty(), request.getDestination());
             walletRepository.save(wallet);
+        }
+        public GetWalletTransactionsResponse getWalletTransactions(UUID walletId) {
+            var wallet = walletRepository.findById(walletId);
+            return WalletMapper.toGetWalletTransactionsResponse(wallet.getTransactions(),wallet.getCurency().toString());
         }
     }
 }

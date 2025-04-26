@@ -38,7 +38,7 @@ public class WalletController {
 
     @PostMapping("wallets/{walletId}/withdraw")
     public ResponseEntity<Void> withdraw(@PathVariable UUID walletId, @RequestBody WithdrawRequest request) {
-        walletService.withdraw(walletId,request);
+        walletService.withdrawFromWallet(walletId,request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
