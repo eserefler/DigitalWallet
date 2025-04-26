@@ -42,4 +42,12 @@ public class Transaction  extends BaseEntity{
         transaction.status = (amount > 100000 && type == TransactionType.DEPOSIT) ? TransactionStatus.PENDING : TransactionStatus.APPROVED;
         return transaction;
     }
+
+    public Boolean isApproved() {
+        return this.status == TransactionStatus.APPROVED;
+    }
+
+    public Boolean isPending() {
+        return this.status == TransactionStatus.PENDING;
+    }
 }

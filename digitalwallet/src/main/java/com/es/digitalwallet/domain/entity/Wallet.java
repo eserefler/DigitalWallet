@@ -1,6 +1,8 @@
 package com.es.digitalwallet.domain.entity;
 
+import com.es.digitalwallet.domain.enums.OppositePartyType;
 import com.es.digitalwallet.domain.enums.TransactionStatus;
+import com.es.digitalwallet.domain.enums.TransactionType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import com.es.digitalwallet.domain.enums.Currency;
@@ -49,14 +51,37 @@ public class Wallet extends BaseEntity {
     }
 
     public void deposit(Transaction newTransaction) {
-        if (newTransaction.getStatus() == TransactionStatus.APPROVED) {
+        if (newTransaction.isApproved()) {
             this.balance += newTransaction.getAmount();
             this.usableBalance += newTransaction.getAmount();
-        } else if (newTransaction.getStatus() == TransactionStatus.PENDING) {
+        } else if (newTransaction.isPending()) {
             this.balance += newTransaction.getAmount();
-            ;
         }
 
-        this.getTransactions().add(newTransaction);
+        this.transactions.add(newTransaction);
+    }
+
+    public void withdraw(long amount, OppositePartyType oppositePartyType, String oppositeParty) {
+        if (amount > this.usableBalance) {
+            throw new IllegalArgumentException("Insufficient balance");
+        }
+
+        if(!canWithdraw()) {
+            throw new IllegalArgumentException("Withdrawals are not allowed for this wallet");
+        }
+
+        var withdrawTransaction = Transaction.of(this,amount, TransactionType.WITHDRAW,oppositePartyType,oppositeParty);
+        this.transactions.add(withdrawTransaction);
+
+        if (withdrawTransaction.isApproved()) {
+            this.balance -= withdrawTransaction.getAmount();
+            this.usableBalance -= withdrawTransaction.getAmount();
+        } else if (withdrawTransaction.isPending()) {
+            this.balance -= withdrawTransaction.getAmount();
+        }
+    }
+
+    private Boolean canWithdraw() {
+        return activeForWithdraw && activeForShopping;
     }
 }

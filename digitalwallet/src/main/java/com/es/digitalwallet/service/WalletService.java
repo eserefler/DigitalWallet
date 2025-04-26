@@ -7,6 +7,7 @@ import com.es.digitalwallet.domain.enums.TransactionType;
 import com.es.digitalwallet.mapper.WalletMapper;
 import com.es.digitalwallet.model.request.CreateWalletRequest;
 import com.es.digitalwallet.model.request.DepositToWalletRequest;
+import com.es.digitalwallet.model.request.WithdrawRequest;
 import com.es.digitalwallet.model.response.GetWalletTransactionsResponse;
 import com.es.digitalwallet.model.response.GetWalletsResponse;
 import com.es.digitalwallet.repository.CustomerRepository;
@@ -24,6 +25,8 @@ public interface WalletService {
     void depositToWallet(UUID walletId, DepositToWalletRequest request);
 
     GetWalletTransactionsResponse getWalletTransactions(UUID walletId);
+
+    void withdraw(UUID walletId, WithdrawRequest request);
 
     @Service
     class WalletServiceImpl implements WalletService {
@@ -71,6 +74,15 @@ public interface WalletService {
             var wallet = walletRepository.findById(walletId);
             return WalletMapper.toGetWalletTransactionsResponse(wallet.getTransactions(),wallet.getCurency().toString());
         }
+
+        public void withdraw(UUID walletId, WithdrawRequest request) {
+            var wallet = walletRepository.findById(walletId);
+            if (wallet == null) {
+                throw new IllegalArgumentException("Wallet not found");
+            }
+            wallet.withdraw(request.getAmount(), request.getOppositeParty(), request.getDestination());
+            walletRepository.save(wallet);
+        }
     }
 }
 // todo:
@@ -79,3 +91,4 @@ public interface WalletService {
 // enumlar string olarak db'de tutulacak
 // "activeForShopping": true,
 //            "activeForWithdraw": true,  bu alanları işlemlerde kontrol et.
+//getWalletTransactions  boş transaction ile test et.

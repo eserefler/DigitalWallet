@@ -2,8 +2,8 @@ package com.es.digitalwallet.controller;
 
 import com.es.digitalwallet.model.request.CreateWalletRequest;
 import com.es.digitalwallet.model.request.DepositToWalletRequest;
+import com.es.digitalwallet.model.request.WithdrawRequest;
 import com.es.digitalwallet.model.response.GetWalletTransactionsResponse;
-import com.es.digitalwallet.model.response.GetWalletsResponse;
 import com.es.digitalwallet.service.WalletService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,8 +37,8 @@ public class WalletController {
     }
 
     @PostMapping("wallets/{walletId}/withdraw")
-    public ResponseEntity<Void> withdraw(@RequestHeader String customerId, @RequestBody CreateWalletRequest request) {
-        walletService.createWallet(UUID.fromString(customerId),request);
+    public ResponseEntity<Void> withdraw(@PathVariable UUID walletId, @RequestBody WithdrawRequest request) {
+        walletService.withdraw(walletId,request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
