@@ -15,9 +15,9 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 public interface WalletService {
-     void createWallet(UUID customerId,CreateWalletRequest request);
+     void createWallet(CreateWalletRequest request);
 
-    GetWalletsResponse getWalletsByUserId(UUID userId);
+    GetWalletsResponse getWalletsByCustomerId(UUID userId);
 
     void depositToWallet(UUID walletId, DepositToWalletRequest request);
 
@@ -37,12 +37,12 @@ public interface WalletService {
             this.customerRepository = customerRepository;
         }
 
-        public void createWallet(UUID customerId, CreateWalletRequest request) {
-            var customer = customerRepository.findById(customerId);
+        public void createWallet( CreateWalletRequest request) {
+            var customer = customerRepository.findById(request.getCustomerId());
             if (customer == null)
                 throw new RuntimeException("customer not found");
 
-            var wallet = walletRepository.findByCustomerIdAndWalletName(customerId, request.getName());
+            var wallet = walletRepository.findByCustomerIdAndWalletName(request.getCustomerId(), request.getName());
             if (wallet != null) {
                 throw new IllegalArgumentException("Wallet with this name already exists");
             }
@@ -51,7 +51,7 @@ public interface WalletService {
             walletRepository.save(newWallet);
         }
 
-        public GetWalletsResponse getWalletsByUserId(UUID userId) {
+        public GetWalletsResponse getWalletsByCustomerId(UUID userId) {
            var wallets = walletRepository.findAllByCustomerId(userId);
            return WalletMapper.toGetWalletsResponse(wallets);
         }

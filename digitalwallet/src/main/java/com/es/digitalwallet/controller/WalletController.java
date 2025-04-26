@@ -19,15 +19,10 @@ public class WalletController {
     public WalletController(WalletService walletService) {
         this.walletService = walletService;
     }
-    @GetMapping("info")
-    public ResponseEntity<String> getInfo(){
-
-        return new ResponseEntity<>("Service is running :)", HttpStatus.OK);
-    }
 
     @PostMapping("wallets")
-    public ResponseEntity<Void> create(@RequestHeader UUID customerId, @RequestBody CreateWalletRequest request) {
-        walletService.createWallet(customerId,request);
+    public ResponseEntity<Void> create(@RequestBody CreateWalletRequest request) {
+        walletService.createWallet(request);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 

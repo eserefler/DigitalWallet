@@ -12,14 +12,14 @@ import java.util.UUID;
 
 @RestController
 
-public class UserController {
+public class CustomerController {
     private final WalletService walletService;
-    public UserController(WalletService walletService) {
+    public CustomerController(WalletService walletService) {
         this.walletService = walletService;
     }
-    @GetMapping("users/{userId}/wallets")
-    public ResponseEntity<GetWalletsResponse> getWalletsByUserId(@PathVariable(required = true) UUID userId) {
-        var result = walletService.getWalletsByUserId(userId);
-        return new ResponseEntity<GetWalletsResponse>(result, HttpStatus.OK);
+    @GetMapping("customers/{customerId}/wallets")
+    public ResponseEntity<GetWalletsResponse> getWalletsByUserId(@PathVariable(required = true) UUID customerId) {
+        var result = walletService.getWalletsByCustomerId(customerId);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }
