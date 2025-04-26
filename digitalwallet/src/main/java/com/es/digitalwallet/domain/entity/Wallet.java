@@ -55,10 +55,10 @@ public class Wallet extends BaseEntity {
         this.transactions.add(depositTransaction);
 
         if (depositTransaction.isApproved()) {
-            this.balance += depositTransaction.getAmount();
-            this.usableBalance += depositTransaction.getAmount();
+            this.increaseUsableBalance(depositTransaction.getAmount());
+            this.increaseBalance(depositTransaction.getAmount());
         } else if (depositTransaction.isPending()) {
-            this.balance += depositTransaction.getAmount();
+            this.increaseBalance(depositTransaction.getAmount());
         }
     }
 
@@ -75,14 +75,45 @@ public class Wallet extends BaseEntity {
         this.transactions.add(withdrawTransaction);
 
         if (withdrawTransaction.isApproved()) {
-            this.balance -= withdrawTransaction.getAmount();
-            this.usableBalance -= withdrawTransaction.getAmount();
+            this.decreaseBalance(withdrawTransaction.getAmount());
+            this.decreaseUsableBalance(withdrawTransaction.getAmount());
         } else if (withdrawTransaction.isPending()) {
-            this.balance -= withdrawTransaction.getAmount();
+            this.decreaseUsableBalance(withdrawTransaction.getAmount());
+        }
+    }
+
+    public void approveTransaction(Transaction transaction, Boolean isApproved) {
+        transaction.setStatus(isApproved);
+
+        if (isApproved) {
+            if (transaction.isDepositTransaction()) {
+                increaseUsableBalance(transaction.getAmount());
+            } else if (transaction.isWithdrawTransaction()) {
+                decreaseBalance(transaction.getAmount());
+            }
+        } else {
+            if (transaction.isDepositTransaction()) {
+                decreaseBalance(transaction.getAmount());
+            } else if (transaction.isWithdrawTransaction()) {
+                increaseUsableBalance(transaction.getAmount());
+            }
         }
     }
 
     private Boolean canWithdraw() {
         return activeForWithdraw && activeForShopping;
+    }
+
+    private void increaseUsableBalance(long amount) {
+        this.usableBalance += amount;
+    }
+    private void decreaseUsableBalance(long amount) {
+        this.usableBalance -= amount;
+    }
+    private void increaseBalance(long amount) {
+        this.balance += amount;
+    }
+    private void decreaseBalance(long amount) {
+        this.balance -= amount;
     }
 }

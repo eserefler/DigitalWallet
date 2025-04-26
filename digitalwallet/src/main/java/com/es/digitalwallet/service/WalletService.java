@@ -2,6 +2,7 @@ package com.es.digitalwallet.service;
 
 import com.es.digitalwallet.domain.entity.Wallet;
 import com.es.digitalwallet.mapper.WalletMapper;
+import com.es.digitalwallet.model.request.ApproveTransactionRequest;
 import com.es.digitalwallet.model.request.CreateWalletRequest;
 import com.es.digitalwallet.model.request.DepositToWalletRequest;
 import com.es.digitalwallet.model.request.WithdrawRequest;
@@ -23,6 +24,8 @@ public interface WalletService {
     GetWalletTransactionsResponse getWalletTransactions(UUID walletId);
 
     void withdrawFromWallet(UUID walletId, WithdrawRequest request);
+
+    void approveTransaction(UUID walletId, UUID transactionId, ApproveTransactionRequest request);
 
     @Service
     class WalletServiceImpl implements WalletService {
@@ -71,16 +74,25 @@ public interface WalletService {
             wallet.withdraw(request.getAmount(), request.getOppositeParty(), request.getDestination());
             walletRepository.save(wallet);
         }
+
+        public void approveTransaction(UUID walletId, UUID transactionId, ApproveTransactionRequest request) {
+            var wallet = walletRepository.findById(walletId);
+            if (wallet == null) {
+                throw new IllegalArgumentException("Wallet not found");
+            }
+
+            var transaction = wallet.getTransactions().stream()
+                    .filter(t -> t.getId().equals(transactionId))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException("Transaction not found"));
+
+            wallet.approveTransaction(transaction, request.getIsApproved());
+            walletRepository.save(wallet);
+        }
+
         public GetWalletTransactionsResponse getWalletTransactions(UUID walletId) {
             var wallet = walletRepository.findById(walletId);
             return WalletMapper.toGetWalletTransactionsResponse(wallet.getTransactions(),wallet.getCurency().toString());
         }
     }
 }
-// todo:
-// hata mesajları class olacak
-// hata filter eklenecek
-// enumlar string olarak db'de tutulacak
-// "activeForShopping": true,
-//            "activeForWithdraw": true,  bu alanları işlemlerde kontrol et.
-//getWalletTransactions  boş transaction ile test et.

@@ -40,6 +40,7 @@ public class WalletMapper {
                     transactionDto.setCurrency(currency);
                     transactionDto.setCreatedAt(transaction.getCreatedAt());
                     transactionDto.setUpdatedAt(transaction.getUpdatedAt());
+                    transactionDto.setStatus(transaction.getStatus().toString());
                     return transactionDto;
                 })
                 .toList());

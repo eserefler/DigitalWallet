@@ -43,11 +43,20 @@ public class Transaction  extends BaseEntity{
         return transaction;
     }
 
+    public void setStatus(Boolean isApproved) {
+        if (this.isPending()) {
+           status = isApproved ? TransactionStatus.APPROVED : TransactionStatus.DENIED;
+           return;
+        }
+
+        throw new IllegalStateException("Transaction cant be approved or denied");
+    }
+
     public Boolean isApproved() {
         return this.status == TransactionStatus.APPROVED;
     }
 
-    public Boolean isPending() {
-        return this.status == TransactionStatus.PENDING;
-    }
+    public Boolean isPending() {return this.status == TransactionStatus.PENDING;}
+    public Boolean isDepositTransaction() {return this.type == TransactionType.DEPOSIT;}
+    public Boolean isWithdrawTransaction() {return this.type == TransactionType.WITHDRAW;}
 }

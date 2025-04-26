@@ -17,4 +17,5 @@ public class TransactionDto {
     private String oppositeParty;
     private long amount;
     private String currency;
+    private String status;
 }

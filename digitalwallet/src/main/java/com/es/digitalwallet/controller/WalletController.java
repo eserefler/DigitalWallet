@@ -1,5 +1,6 @@
 package com.es.digitalwallet.controller;
 
+import com.es.digitalwallet.model.request.ApproveTransactionRequest;
 import com.es.digitalwallet.model.request.CreateWalletRequest;
 import com.es.digitalwallet.model.request.DepositToWalletRequest;
 import com.es.digitalwallet.model.request.WithdrawRequest;
@@ -48,9 +49,9 @@ public class WalletController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PostMapping("wallets/{walletId}/transaction/{transactionId}/approve")
-    public ResponseEntity<Void> approve(@RequestHeader String customerId, @RequestBody CreateWalletRequest request) {
-        walletService.createWallet(UUID.fromString(customerId),request);
+    @PostMapping("wallets/{walletId}/transactions/{transactionId}/approve")
+    public ResponseEntity<Void> approve(@PathVariable UUID walletId, @PathVariable UUID transactionId,@RequestBody ApproveTransactionRequest request) {
+        walletService.approveTransaction(walletId,transactionId,request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
