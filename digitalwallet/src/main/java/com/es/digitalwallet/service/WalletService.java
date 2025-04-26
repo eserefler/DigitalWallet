@@ -7,6 +7,7 @@ import com.es.digitalwallet.domain.enums.TransactionType;
 import com.es.digitalwallet.mapper.WalletMapper;
 import com.es.digitalwallet.model.request.CreateWalletRequest;
 import com.es.digitalwallet.model.request.DepositToWalletRequest;
+import com.es.digitalwallet.model.response.GetWalletTransactionsResponse;
 import com.es.digitalwallet.model.response.GetWalletsResponse;
 import com.es.digitalwallet.repository.CustomerRepository;
 import com.es.digitalwallet.repository.WalletRepository;
@@ -21,6 +22,8 @@ public interface WalletService {
     GetWalletsResponse getWalletsByUserId(UUID userId);
 
     void depositToWallet(UUID walletId, DepositToWalletRequest request);
+
+    GetWalletTransactionsResponse getWalletTransactions(UUID walletId);
 
     @Service
     class WalletServiceImpl implements WalletService {
@@ -62,6 +65,11 @@ public interface WalletService {
             wallet.deposit(newTransaction);
 
             walletRepository.save(wallet);
+        }
+
+        public GetWalletTransactionsResponse getWalletTransactions(UUID walletId) {
+            var wallet = walletRepository.findById(walletId);
+            return WalletMapper.toGetWalletTransactionsResponse(wallet.getTransactions(),wallet.getCurency().toString());
         }
     }
 }

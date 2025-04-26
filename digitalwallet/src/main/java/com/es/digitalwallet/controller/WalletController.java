@@ -2,6 +2,7 @@ package com.es.digitalwallet.controller;
 
 import com.es.digitalwallet.model.request.CreateWalletRequest;
 import com.es.digitalwallet.model.request.DepositToWalletRequest;
+import com.es.digitalwallet.model.response.GetWalletTransactionsResponse;
 import com.es.digitalwallet.model.response.GetWalletsResponse;
 import com.es.digitalwallet.service.WalletService;
 import org.springframework.http.HttpStatus;
@@ -32,24 +33,24 @@ public class WalletController {
     @PostMapping("wallets/{walletId}/deposit")
     public ResponseEntity<Void> deposit(@PathVariable(required = true) UUID walletId, @RequestBody DepositToWalletRequest request) {
         walletService.depositToWallet(walletId,request);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("wallets/{walletId}/withdraw")
     public ResponseEntity<Void> withdraw(@RequestHeader String customerId, @RequestBody CreateWalletRequest request) {
         walletService.createWallet(UUID.fromString(customerId),request);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("wallets/{walletId}/transactions")
-    public ResponseEntity<GetWalletsResponse> getWalletTransactions(@PathVariable(required = true) UUID walletId) {
-        var result = walletService.getWalletsByUserId(walletId);
-        return new ResponseEntity<GetWalletsResponse>(result, HttpStatus.OK);
+    public ResponseEntity<GetWalletTransactionsResponse> getWalletTransactions(@PathVariable(required = true) UUID walletId) {
+        var result = walletService.getWalletTransactions(walletId);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PostMapping("wallets/{walletId}/transaction/{transactionId}/approve")
     public ResponseEntity<Void> approve(@RequestHeader String customerId, @RequestBody CreateWalletRequest request) {
         walletService.createWallet(UUID.fromString(customerId),request);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
