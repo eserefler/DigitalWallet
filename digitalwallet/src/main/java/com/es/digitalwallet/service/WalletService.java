@@ -21,7 +21,7 @@ import java.util.UUID;
 public interface WalletService {
      void createWallet(CreateWalletRequest request);
 
-    GetWalletsResponse getWalletsByCustomerId(UUID userId);
+    GetWalletsResponse getWalletsByCustomerId(UUID customerId);
 
     void depositToWallet(UUID walletId, DepositToWalletRequest request);
 
@@ -54,8 +54,8 @@ public interface WalletService {
             walletRepository.save(newWallet);
         }
 
-        public GetWalletsResponse getWalletsByCustomerId(UUID userId) {
-           var wallets = walletRepository.findAllByCustomerId(userId);
+        public GetWalletsResponse getWalletsByCustomerId(UUID customerId) {
+           var wallets = walletRepository.findAllByCustomerId(customerId);
            return WalletMapper.toGetWalletsResponse(wallets);
         }
 
