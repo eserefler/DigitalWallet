@@ -3,6 +3,7 @@ package com.es.digitalwallet.domain.entity;
 import com.es.digitalwallet.domain.enums.OppositePartyType;
 import com.es.digitalwallet.domain.enums.TransactionStatus;
 import com.es.digitalwallet.domain.enums.TransactionType;
+import com.es.digitalwallet.exception.TransactionCantBeApprovedOrDeniedException;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -49,7 +50,7 @@ public class Transaction  extends BaseEntity{
            return;
         }
 
-        throw new IllegalStateException("Transaction cant be approved or denied");
+        throw new TransactionCantBeApprovedOrDeniedException();
     }
 
     public Boolean isApproved() {

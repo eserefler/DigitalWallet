@@ -1,8 +1,9 @@
 package com.es.digitalwallet.domain.entity;
 
 import com.es.digitalwallet.domain.enums.OppositePartyType;
-import com.es.digitalwallet.domain.enums.TransactionStatus;
 import com.es.digitalwallet.domain.enums.TransactionType;
+import com.es.digitalwallet.exception.InsufficientBalanceException;
+import com.es.digitalwallet.exception.WithdrawalAreNotAllowedException;
 import jakarta.persistence.*;
 import lombok.Getter;
 import com.es.digitalwallet.domain.enums.Currency;
@@ -63,13 +64,11 @@ public class Wallet extends BaseEntity {
     }
 
     public void withdraw(long amount, OppositePartyType oppositePartyType, String oppositeParty) {
-        if (amount > this.usableBalance) {
-            throw new IllegalArgumentException("Insufficient balance");
-        }
+        if (amount > this.usableBalance)
+            throw new InsufficientBalanceException();
 
-        if(!canWithdraw()) {
-            throw new IllegalArgumentException("Withdrawals are not allowed for this wallet");
-        }
+        if(!canWithdraw())
+            throw new WithdrawalAreNotAllowedException();
 
         var withdrawTransaction = Transaction.of(this,amount, TransactionType.WITHDRAW,oppositePartyType,oppositeParty);
         this.transactions.add(withdrawTransaction);

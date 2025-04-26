@@ -1,6 +1,10 @@
 package com.es.digitalwallet.service;
 
 import com.es.digitalwallet.domain.entity.Wallet;
+import com.es.digitalwallet.exception.CustomerNotFoundException;
+import com.es.digitalwallet.exception.TransactionNotFoundException;
+import com.es.digitalwallet.exception.WalletAlreadyExistException;
+import com.es.digitalwallet.exception.WalletNotFoundException;
 import com.es.digitalwallet.mapper.WalletMapper;
 import com.es.digitalwallet.model.request.ApproveTransactionRequest;
 import com.es.digitalwallet.model.request.CreateWalletRequest;
@@ -40,12 +44,11 @@ public interface WalletService {
         public void createWallet( CreateWalletRequest request) {
             var customer = customerRepository.findById(request.getCustomerId());
             if (customer == null)
-                throw new RuntimeException("customer not found");
+                throw new CustomerNotFoundException();
 
             var wallet = walletRepository.findByCustomerIdAndWalletName(request.getCustomerId(), request.getName());
-            if (wallet != null) {
-                throw new IllegalArgumentException("Wallet with this name already exists");
-            }
+            if (wallet != null)
+                throw new WalletAlreadyExistException();
 
             var newWallet = Wallet.of(customer, request.getName(), request.getCurrency(), request.getActiveForShopping(), request.getActiveForWithdraw());
             walletRepository.save(newWallet);
@@ -60,7 +63,7 @@ public interface WalletService {
         public void depositToWallet(UUID walletId, DepositToWalletRequest request) {
             var wallet = walletRepository.findById(walletId);
             if (wallet == null) {
-                throw new IllegalArgumentException("Wallet not found");
+                throw new WalletNotFoundException();
             }
             wallet.deposit(request.getAmount(), request.getOppositeParty(), request.getSource());
             walletRepository.save(wallet);
@@ -68,23 +71,21 @@ public interface WalletService {
 
         public void withdrawFromWallet(UUID walletId, WithdrawRequest request) {
             var wallet = walletRepository.findById(walletId);
-            if (wallet == null) {
-                throw new IllegalArgumentException("Wallet not found");
-            }
+            if (wallet == null)
+                throw new WalletNotFoundException();
             wallet.withdraw(request.getAmount(), request.getOppositeParty(), request.getDestination());
             walletRepository.save(wallet);
         }
 
         public void approveTransaction(UUID walletId, UUID transactionId, ApproveTransactionRequest request) {
             var wallet = walletRepository.findById(walletId);
-            if (wallet == null) {
-                throw new IllegalArgumentException("Wallet not found");
-            }
+            if (wallet == null)
+                throw new WalletNotFoundException();
 
             var transaction = wallet.getTransactions().stream()
                     .filter(t -> t.getId().equals(transactionId))
                     .findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException("Transaction not found"));
+                    .orElseThrow(TransactionNotFoundException::new);
 
             wallet.approveTransaction(transaction, request.getIsApproved());
             walletRepository.save(wallet);
@@ -92,6 +93,8 @@ public interface WalletService {
 
         public GetWalletTransactionsResponse getWalletTransactions(UUID walletId) {
             var wallet = walletRepository.findById(walletId);
+            if (wallet == null)
+                throw new WalletNotFoundException();
             return WalletMapper.toGetWalletTransactionsResponse(wallet.getTransactions(),wallet.getCurency().toString());
         }
     }
