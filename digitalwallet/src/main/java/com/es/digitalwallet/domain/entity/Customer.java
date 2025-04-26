@@ -1,9 +1,9 @@
 package com.es.digitalwallet.domain.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
+
+import java.util.List;
 
 @Entity
 @Table(name = "customer")
@@ -18,6 +18,9 @@ public class Customer extends BaseEntity {
 
     @Column(name = "tckn", nullable = false)
     private String tckn;
+
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Wallet> wallets;
 
     public static Customer of(String name, String surname, String tckn) {
         Customer customer = new Customer();

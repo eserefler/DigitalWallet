@@ -3,9 +3,7 @@ package com.es.digitalwallet.domain.entity;
 import com.es.digitalwallet.domain.enums.OppositePartyType;
 import com.es.digitalwallet.domain.enums.TransactionStatus;
 import com.es.digitalwallet.domain.enums.TransactionType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.util.UUID;
@@ -14,8 +12,6 @@ import java.util.UUID;
 @Table(name = "transaction")
 @Getter
 public class Transaction  extends BaseEntity{
-    @Column(name = "wallet_id", nullable = false)
-    private UUID walletId;
 
     @Column(name = "amount", nullable = false)
     private long amount;
@@ -32,14 +28,18 @@ public class Transaction  extends BaseEntity{
     @Column(name = "status", nullable = false)
     private TransactionStatus status;
 
-    public static Transaction of(UUID walletId, long amount, TransactionType type, OppositePartyType oppositePartyType, String oppositeParty, TransactionStatus status) {
+    @ManyToOne
+    @JoinColumn(name = "wallet_id", nullable = false)
+    private Wallet wallet;
+
+    public static Transaction of(Wallet wallet, long amount, TransactionType type, OppositePartyType oppositePartyType, String oppositeParty) {
         Transaction transaction = new Transaction();
-        transaction.walletId = walletId;
+        transaction.wallet = wallet;
         transaction.amount = amount;
         transaction.type = type;
         transaction.oppositePartyType = oppositePartyType;
         transaction.oppositeParty = oppositeParty;
-        transaction.status = status;
+        transaction.status = (amount > 100000 && type == TransactionType.DEPOSIT) ? TransactionStatus.PENDING : TransactionStatus.APPROVED;
         return transaction;
     }
 }

@@ -11,4 +11,6 @@ public class WalletDto {
     private String curency;
     private Boolean activeForShopping;
     private Boolean activeForWithdraw;
+    private long balance;
+    private long usableBalance;
 }

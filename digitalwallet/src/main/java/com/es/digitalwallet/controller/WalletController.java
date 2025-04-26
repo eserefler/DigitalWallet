@@ -1,6 +1,7 @@
 package com.es.digitalwallet.controller;
 
 import com.es.digitalwallet.model.request.CreateWalletRequest;
+import com.es.digitalwallet.model.request.DepositToWalletRequest;
 import com.es.digitalwallet.model.response.GetWalletsResponse;
 import com.es.digitalwallet.service.WalletService;
 import org.springframework.http.HttpStatus;
@@ -23,14 +24,32 @@ public class WalletController {
     }
 
     @PostMapping("wallets")
-    public ResponseEntity<Void> create(@RequestHeader String customerId, @RequestBody CreateWalletRequest request) {
+    public ResponseEntity<Void> create(@RequestHeader UUID customerId, @RequestBody CreateWalletRequest request) {
+        walletService.createWallet(customerId,request);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @PostMapping("wallets/{walletId}/deposit")
+    public ResponseEntity<Void> deposit(@PathVariable(required = true) UUID walletId, @RequestBody DepositToWalletRequest request) {
+        walletService.depositToWallet(walletId,request);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @PostMapping("wallets/{walletId}/withdraw")
+    public ResponseEntity<Void> withdraw(@RequestHeader String customerId, @RequestBody CreateWalletRequest request) {
         walletService.createWallet(UUID.fromString(customerId),request);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @GetMapping("users/{userId}/wallets")
-    public ResponseEntity<GetWalletsResponse> getWalletsByUserId(@PathVariable(required = true) UUID userId) {
-        var result = walletService.getWalletsByUserId(userId);
+    @GetMapping("wallets/{walletId}/transactions")
+    public ResponseEntity<GetWalletsResponse> getWalletTransactions(@PathVariable(required = true) UUID walletId) {
+        var result = walletService.getWalletsByUserId(walletId);
         return new ResponseEntity<GetWalletsResponse>(result, HttpStatus.OK);
+    }
+
+    @PostMapping("wallets/{walletId}/transaction/{transactionId}/approve")
+    public ResponseEntity<Void> approve(@RequestHeader String customerId, @RequestBody CreateWalletRequest request) {
+        walletService.createWallet(UUID.fromString(customerId),request);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 }

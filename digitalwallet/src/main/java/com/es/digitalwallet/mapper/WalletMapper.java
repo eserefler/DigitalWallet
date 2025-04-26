@@ -16,6 +16,8 @@ public class WalletMapper {
                     walletDto.setCurency(wallet.getCurency().toString());
                     walletDto.setActiveForShopping(wallet.getActiveForShopping());
                     walletDto.setActiveForWithdraw(wallet.getActiveForWithdraw());
+                    walletDto.setBalance(wallet.getBalance());
+                    walletDto.setUsableBalance(wallet.getUsableBalance());
                     return walletDto;
                 })
                 .toList());
