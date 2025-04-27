@@ -25,10 +25,10 @@ public class Wallet extends BaseEntity {
     private Currency curency;
 
     @Column(name = "active_for_shopping", nullable = false)
-    private Boolean activeForShopping;
+    private boolean activeForShopping;
 
     @Column(name = "active_for_withdraw", nullable = false)
-    private Boolean activeForWithdraw;
+    private boolean activeForWithdraw;
 
     @Column(name = "balance")
     private long balance;
@@ -99,7 +99,7 @@ public class Wallet extends BaseEntity {
         }
     }
 
-    private Boolean canWithdraw() {
+    private boolean canWithdraw() {
         return activeForWithdraw && activeForShopping;
     }
 

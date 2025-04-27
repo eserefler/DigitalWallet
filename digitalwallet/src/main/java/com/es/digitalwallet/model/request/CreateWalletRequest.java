@@ -13,6 +13,6 @@ public class CreateWalletRequest {
     @NotNull
     private String name;
     private Currency currency;
-    private Boolean activeForShopping;
-    private Boolean activeForWithdraw;
+    private boolean activeForShopping;
+    private boolean activeForWithdraw;
 }

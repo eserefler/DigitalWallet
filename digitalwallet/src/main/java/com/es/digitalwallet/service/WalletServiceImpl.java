@@ -28,7 +28,7 @@ public class WalletServiceImpl implements WalletService {
         if (wallet != null)
             throw new WalletAlreadyExistException();
 
-        var newWallet = Wallet.of(customerId, request.getName(), request.getCurrency(), request.getActiveForShopping(), request.getActiveForWithdraw());
+        var newWallet = Wallet.of(customerId, request.getName(), request.getCurrency(), request.isActiveForShopping(), request.isActiveForWithdraw());
         walletRepository.save(newWallet);
     }
 
