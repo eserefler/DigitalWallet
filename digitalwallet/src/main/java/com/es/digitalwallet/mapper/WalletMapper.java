@@ -24,6 +24,7 @@ public class WalletMapper {
                     return walletDto;
                 })
                 .toList());
+
         return getWalletsResponse;
     }
 
@@ -46,6 +47,5 @@ public class WalletMapper {
                 .toList());
 
         return response;
-
     }
 }

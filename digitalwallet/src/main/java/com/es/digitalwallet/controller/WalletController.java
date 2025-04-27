@@ -7,6 +7,7 @@ import com.es.digitalwallet.model.request.WithdrawFromWalletRequest;
 import com.es.digitalwallet.model.response.GetWalletTransactionsResponse;
 import com.es.digitalwallet.model.response.GetWalletsResponse;
 import com.es.digitalwallet.service.WalletService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,27 +15,26 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
+@RequestMapping("/wallets")
+@RequiredArgsConstructor
 public class WalletController {
 
     private final WalletService walletService;
-    public WalletController(WalletService walletService) {
-        this.walletService = walletService;
-    }
 
-    @PostMapping("wallets")
+    @PostMapping()
     public ResponseEntity<Void> create(@RequestHeader("x-customer-id") UUID customerIdHeader,
                                        @RequestBody CreateWalletRequest request) {
         walletService.createWallet(customerIdHeader,request);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @GetMapping("wallets")
+    @GetMapping()
     public ResponseEntity<GetWalletsResponse> getWallets(@RequestHeader("x-customer-id") UUID customerIdHeader) {
         var result = walletService.getWalletsByCustomerId(customerIdHeader);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PutMapping("wallets/{walletId}/deposit")
+    @PutMapping("/{walletId}/deposit")
     public ResponseEntity<Void> deposit(@RequestHeader("x-customer-id") UUID customerIdHeader,
                                         @PathVariable(required = true) UUID walletId,
                                         @RequestBody DepositToWalletRequest request) {
@@ -42,7 +42,7 @@ public class WalletController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PutMapping("wallets/{walletId}/withdraw")
+    @PutMapping("/{walletId}/withdraw")
     public ResponseEntity<Void> withdraw(@RequestHeader("x-customer-id") UUID customerIdHeader,
                                          @PathVariable UUID walletId,
                                          @RequestBody WithdrawFromWalletRequest request) {
@@ -50,14 +50,14 @@ public class WalletController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("wallets/{walletId}/transactions")
+    @GetMapping("/{walletId}/transactions")
     public ResponseEntity<GetWalletTransactionsResponse> getWalletTransactions(@RequestHeader("x-customer-id") UUID customerIdHeader,
                                                                                @PathVariable(required = true) UUID walletId) {
         var result = walletService.getWalletTransactions(customerIdHeader,walletId);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PutMapping("wallets/{walletId}/transactions/{transactionId}/approve")
+    @PutMapping("/{walletId}/transactions/{transactionId}/approve")
     public ResponseEntity<Void> approve(@RequestHeader("x-customer-id") UUID customerIdHeader,
                                         @PathVariable UUID walletId,
                                         @PathVariable UUID transactionId,
