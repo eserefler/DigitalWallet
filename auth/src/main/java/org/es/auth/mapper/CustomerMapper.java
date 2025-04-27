@@ -6,7 +6,6 @@ import org.es.auth.models.request.RegisterRequest;
 import org.es.auth.models.response.UpdatedPasswordResponse;
 import org.es.auth.models.response.CustomerDetailResponse;
 import org.es.auth.models.response.CustomerLoginResponse;
-
 import java.sql.Date;
 
 public class CustomerMapper {

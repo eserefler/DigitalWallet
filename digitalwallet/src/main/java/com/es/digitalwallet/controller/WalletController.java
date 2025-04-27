@@ -3,8 +3,9 @@ package com.es.digitalwallet.controller;
 import com.es.digitalwallet.model.request.ApproveTransactionRequest;
 import com.es.digitalwallet.model.request.CreateWalletRequest;
 import com.es.digitalwallet.model.request.DepositToWalletRequest;
-import com.es.digitalwallet.model.request.WithdrawRequest;
+import com.es.digitalwallet.model.request.WithdrawFromWalletRequest;
 import com.es.digitalwallet.model.response.GetWalletTransactionsResponse;
+import com.es.digitalwallet.model.response.GetWalletsResponse;
 import com.es.digitalwallet.service.WalletService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,32 +22,47 @@ public class WalletController {
     }
 
     @PostMapping("wallets")
-    public ResponseEntity<Void> create(@RequestBody CreateWalletRequest request) {
-        walletService.createWallet(request);
+    public ResponseEntity<Void> create(@RequestHeader("x-customer-id") UUID customerIdHeader,
+                                       @RequestBody CreateWalletRequest request) {
+        walletService.createWallet(customerIdHeader,request);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PostMapping("wallets/{walletId}/deposit")
-    public ResponseEntity<Void> deposit(@PathVariable(required = true) UUID walletId, @RequestBody DepositToWalletRequest request) {
-        walletService.depositToWallet(walletId,request);
+    @GetMapping("wallets")
+    public ResponseEntity<GetWalletsResponse> getWallets(@RequestHeader("x-customer-id") UUID customerIdHeader) {
+        var result = walletService.getWalletsByCustomerId(customerIdHeader);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @PutMapping("wallets/{walletId}/deposit")
+    public ResponseEntity<Void> deposit(@RequestHeader("x-customer-id") UUID customerIdHeader,
+                                        @PathVariable(required = true) UUID walletId,
+                                        @RequestBody DepositToWalletRequest request) {
+        walletService.depositToWallet(customerIdHeader,walletId,request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("wallets/{walletId}/withdraw")
-    public ResponseEntity<Void> withdraw(@PathVariable UUID walletId, @RequestBody WithdrawRequest request) {
-        walletService.withdrawFromWallet(walletId,request);
+    @PutMapping("wallets/{walletId}/withdraw")
+    public ResponseEntity<Void> withdraw(@RequestHeader("x-customer-id") UUID customerIdHeader,
+                                         @PathVariable UUID walletId,
+                                         @RequestBody WithdrawFromWalletRequest request) {
+        walletService.withdrawFromWallet(customerIdHeader,walletId,request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("wallets/{walletId}/transactions")
-    public ResponseEntity<GetWalletTransactionsResponse> getWalletTransactions(@PathVariable(required = true) UUID walletId) {
-        var result = walletService.getWalletTransactions(walletId);
+    public ResponseEntity<GetWalletTransactionsResponse> getWalletTransactions(@RequestHeader("x-customer-id") UUID customerIdHeader,
+                                                                               @PathVariable(required = true) UUID walletId) {
+        var result = walletService.getWalletTransactions(customerIdHeader,walletId);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PostMapping("wallets/{walletId}/transactions/{transactionId}/approve")
-    public ResponseEntity<Void> approve(@PathVariable UUID walletId, @PathVariable UUID transactionId,@RequestBody ApproveTransactionRequest request) {
-        walletService.approveTransaction(walletId,transactionId,request);
+    @PutMapping("wallets/{walletId}/transactions/{transactionId}/approve")
+    public ResponseEntity<Void> approve(@RequestHeader("x-customer-id") UUID customerIdHeader,
+                                        @PathVariable UUID walletId,
+                                        @PathVariable UUID transactionId,
+                                        @RequestBody ApproveTransactionRequest request) {
+        walletService.approveTransaction(customerIdHeader,walletId,transactionId,request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

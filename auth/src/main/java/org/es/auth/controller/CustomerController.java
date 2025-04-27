@@ -1,6 +1,5 @@
 package org.es.auth.controller;
 
-
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -23,31 +22,31 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/customers")
 @Tag(name = "Customer Management", description = "Operations related to customer management")
-public class UserController extends BaseController {
+public class CustomerController extends BaseController {
 
     private final CustomerService customerService;
 
     @PostMapping("")
     public ResponseEntity<CustomerDetailResponse> register(@Valid @RequestBody RegisterRequest customer) {
-        CustomerDetailResponse createdUser = customerService.register(customer);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+        CustomerDetailResponse createdCustomer = customerService.register(customer);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdCustomer);
     }
 
     @PostMapping("/login")
     public ResponseEntity<CustomerLoginResponse> login(@Valid @RequestBody LoginRequest request) {
-        CustomerLoginResponse userLogin = customerService.login(request);
-        if (userLogin != null) {
-            return ResponseEntity.ok(userLogin);
+        CustomerLoginResponse customerLogin = customerService.login(request);
+        if (customerLogin != null) {
+            return ResponseEntity.ok(customerLogin);
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CustomerDetailResponse> getUserById(@PathVariable UUID id) {
-        CustomerDetailResponse userDetail = customerService.getUserDetail(id);
-        if (userDetail != null) {
-            return ResponseEntity.ok(userDetail);
+    public ResponseEntity<CustomerDetailResponse> getCustomerById(@PathVariable UUID id) {
+        CustomerDetailResponse customerDetail = customerService.getCustomerDetail(id);
+        if (customerDetail != null) {
+            return ResponseEntity.ok(customerDetail);
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }

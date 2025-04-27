@@ -1,7 +1,6 @@
 package com.es.digitalwallet.service;
 
 import com.es.digitalwallet.domain.entity.Wallet;
-import com.es.digitalwallet.exception.CustomerNotFoundException;
 import com.es.digitalwallet.exception.TransactionNotFoundException;
 import com.es.digitalwallet.exception.WalletAlreadyExistException;
 import com.es.digitalwallet.exception.WalletNotFoundException;
@@ -9,48 +8,41 @@ import com.es.digitalwallet.mapper.WalletMapper;
 import com.es.digitalwallet.model.request.ApproveTransactionRequest;
 import com.es.digitalwallet.model.request.CreateWalletRequest;
 import com.es.digitalwallet.model.request.DepositToWalletRequest;
-import com.es.digitalwallet.model.request.WithdrawRequest;
+import com.es.digitalwallet.model.request.WithdrawFromWalletRequest;
 import com.es.digitalwallet.model.response.GetWalletTransactionsResponse;
 import com.es.digitalwallet.model.response.GetWalletsResponse;
-import com.es.digitalwallet.repository.CustomerRepository;
 import com.es.digitalwallet.repository.WalletRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
 public interface WalletService {
-     void createWallet(CreateWalletRequest request);
+     void createWallet(UUID customerId,CreateWalletRequest request);
 
     GetWalletsResponse getWalletsByCustomerId(UUID customerId);
 
-    void depositToWallet(UUID walletId, DepositToWalletRequest request);
+    void depositToWallet(UUID customerId,UUID walletId, DepositToWalletRequest request);
 
-    GetWalletTransactionsResponse getWalletTransactions(UUID walletId);
+    GetWalletTransactionsResponse getWalletTransactions(UUID customerId,UUID walletId);
 
-    void withdrawFromWallet(UUID walletId, WithdrawRequest request);
+    void withdrawFromWallet(UUID customerId,UUID walletId, WithdrawFromWalletRequest request);
 
-    void approveTransaction(UUID walletId, UUID transactionId, ApproveTransactionRequest request);
+    void approveTransaction(UUID customerId,UUID walletId, UUID transactionId, ApproveTransactionRequest request);
 
     @Service
     class WalletServiceImpl implements WalletService {
         private final WalletRepository walletRepository;
-        private final CustomerRepository customerRepository;
 
-        public WalletServiceImpl(WalletRepository walletRepository, CustomerRepository customerRepository) {
+        public WalletServiceImpl(WalletRepository walletRepository) {
             this.walletRepository = walletRepository;
-            this.customerRepository = customerRepository;
         }
 
-        public void createWallet( CreateWalletRequest request) {
-            var customer = customerRepository.findById(request.getCustomerId());
-            if (customer == null)
-                throw new CustomerNotFoundException();
-
-            var wallet = walletRepository.findByCustomerIdAndWalletName(request.getCustomerId(), request.getName());
+        public void createWallet(UUID customerId ,CreateWalletRequest request) {
+            var wallet = walletRepository.findByCustomerIdAndWalletName(customerId, request.getName());
             if (wallet != null)
                 throw new WalletAlreadyExistException();
 
-            var newWallet = Wallet.of(customer, request.getName(), request.getCurrency(), request.getActiveForShopping(), request.getActiveForWithdraw());
+            var newWallet = Wallet.of(customerId, request.getName(), request.getCurrency(), request.getActiveForShopping(), request.getActiveForWithdraw());
             walletRepository.save(newWallet);
         }
 
@@ -59,9 +51,8 @@ public interface WalletService {
            return WalletMapper.toGetWalletsResponse(wallets);
         }
 
-
-        public void depositToWallet(UUID walletId, DepositToWalletRequest request) {
-            var wallet = walletRepository.findById(walletId);
+        public void depositToWallet(UUID customerId,UUID walletId, DepositToWalletRequest request) {
+            var wallet = walletRepository.findByIdAndCustomerId(walletId,customerId);
             if (wallet == null) {
                 throw new WalletNotFoundException();
             }
@@ -69,16 +60,16 @@ public interface WalletService {
             walletRepository.save(wallet);
         }
 
-        public void withdrawFromWallet(UUID walletId, WithdrawRequest request) {
-            var wallet = walletRepository.findById(walletId);
+        public void withdrawFromWallet(UUID customerId,UUID walletId, WithdrawFromWalletRequest request) {
+            var wallet = walletRepository.findByIdAndCustomerId(walletId,customerId);
             if (wallet == null)
                 throw new WalletNotFoundException();
             wallet.withdraw(request.getAmount(), request.getOppositeParty(), request.getDestination());
             walletRepository.save(wallet);
         }
 
-        public void approveTransaction(UUID walletId, UUID transactionId, ApproveTransactionRequest request) {
-            var wallet = walletRepository.findById(walletId);
+        public void approveTransaction(UUID customerId,UUID walletId, UUID transactionId, ApproveTransactionRequest request) {
+            var wallet = walletRepository.findByIdAndCustomerId(walletId,customerId);
             if (wallet == null)
                 throw new WalletNotFoundException();
 
@@ -91,8 +82,8 @@ public interface WalletService {
             walletRepository.save(wallet);
         }
 
-        public GetWalletTransactionsResponse getWalletTransactions(UUID walletId) {
-            var wallet = walletRepository.findById(walletId);
+        public GetWalletTransactionsResponse getWalletTransactions(UUID customerId,UUID walletId) {
+            var wallet = walletRepository.findByIdAndCustomerId(walletId,customerId);
             if (wallet == null)
                 throw new WalletNotFoundException();
             return WalletMapper.toGetWalletTransactionsResponse(wallet.getTransactions(),wallet.getCurency().toString());

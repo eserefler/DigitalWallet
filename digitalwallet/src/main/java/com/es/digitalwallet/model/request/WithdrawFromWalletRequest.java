@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class WithdrawRequest {
+public class WithdrawFromWalletRequest {
     private long amount;
     private OppositePartyType oppositeParty;
     private String destination;

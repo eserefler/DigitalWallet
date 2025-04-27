@@ -10,6 +10,6 @@ public interface WalletRepository extends JpaRepository<Wallet, Long> {
 
     List<Wallet> findAllByCustomerId(UUID userId);
 
-   Wallet findById(UUID walletId);
+   Wallet findByIdAndCustomerId(UUID walletId, UUID customerId);
 }
 

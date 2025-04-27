@@ -9,7 +9,6 @@ import java.util.UUID;
 @Getter
 @Setter
 public class CreateWalletRequest {
-    private UUID customerId;
     private String name;
     private Currency currency;
     private Boolean activeForShopping;

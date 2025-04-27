@@ -15,6 +15,6 @@ public interface CustomerService {
 
     CustomerDetailResponse register(RegisterRequest registerRequest);
     CustomerLoginResponse login(LoginRequest request);
-    CustomerDetailResponse getUserDetail(UUID id);
+    CustomerDetailResponse getCustomerDetail(UUID id);
     UpdatedPasswordResponse updatePassword(JwtModel jwtModel, UpdatePasswordRequest request);
 }

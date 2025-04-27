@@ -16,7 +16,6 @@ import org.es.auth.models.response.CustomerDetailResponse;
 import org.es.auth.repository.CustomerRepository;
 import org.springframework.stereotype.Service;
 import org.es.auth.models.response.CustomerLoginResponse;
-
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -29,7 +28,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     public CustomerDetailResponse register(RegisterRequest registerRequest) {
         if (customerRepository.findByUsername(registerRequest.getUsername()) != null) {
-            throw new UserAlreadyExistException();
+            throw new CustomerAlreadyExistException();
         }
 
         if (customerRepository.findByEmail(registerRequest.getEmail()) != null) {
@@ -49,7 +48,7 @@ public class CustomerServiceImpl implements CustomerService {
     public CustomerLoginResponse login(LoginRequest request) {
         Customer customer = customerRepository.findByUsername(request.getUsername());
         if (customer == null)
-            throw new UserNotFoundException();
+            throw new CustomerNotFoundException();
 
         if (!PasswordSecurityUtil.checkPassword(request.getPassword(), customer.getPassword()))
             throw new InvalidPasswordException();
@@ -58,10 +57,10 @@ public class CustomerServiceImpl implements CustomerService {
         return CustomerMapper.mapToUserLoginResponse(customer, token);
     }
 
-    public CustomerDetailResponse getUserDetail(UUID id) {
+    public CustomerDetailResponse getCustomerDetail(UUID id) {
         Customer customer = customerRepository.findById(id);
         if (customer == null)
-            throw new UserNotFoundException();
+            throw new CustomerNotFoundException();
 
         return CustomerMapper.mapToCustomerDetailResponse(customer);
     }
@@ -69,7 +68,7 @@ public class CustomerServiceImpl implements CustomerService {
     public UpdatedPasswordResponse updatePassword(JwtModel jwtModel, UpdatePasswordRequest request) {
         Customer customer = customerRepository.findByUsername(jwtModel.getUsername());
         if (customer == null)
-            throw new UserNotFoundException();
+            throw new CustomerNotFoundException();
 
         if (!customer.getPassword().equals(PasswordSecurityUtil.hashPassword(request.getPassword())))
             throw new InvalidPasswordException();

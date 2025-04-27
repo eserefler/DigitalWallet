@@ -8,15 +8,15 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import com.es.digitalwallet.domain.enums.Currency;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "wallet")
 @Getter
 public class Wallet extends BaseEntity {
 
-    @ManyToOne
-    @JoinColumn(name = "customer_id", nullable = false)
-    private Customer customer;
+    @Column(name = "customer_id", nullable = false)
+    private UUID customerId;
 
     @Column(name = "wallet_name", nullable = false)
     private String walletName;
@@ -39,9 +39,9 @@ public class Wallet extends BaseEntity {
     @OneToMany(mappedBy = "wallet", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Transaction> transactions;
 
-    public static Wallet of(Customer customer, String walletName, Currency currency, Boolean activeForShopping, Boolean activeForWithdraw) {
+    public static Wallet of(UUID customerId, String walletName, Currency currency, Boolean activeForShopping, Boolean activeForWithdraw) {
         Wallet wallet = new Wallet();
-        wallet.customer = customer;
+        wallet.customerId = customerId;
         wallet.walletName = walletName;
         wallet.curency = currency;
         wallet.activeForShopping = activeForShopping;
