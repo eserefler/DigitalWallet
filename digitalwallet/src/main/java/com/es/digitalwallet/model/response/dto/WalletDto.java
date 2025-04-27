@@ -11,8 +11,8 @@ public class WalletDto {
     private UUID id;
     private String walletName;
     private String curency;
-    private Boolean activeForShopping;
-    private Boolean activeForWithdraw;
+    private boolean activeForShopping;
+    private boolean activeForWithdraw;
     private long balance;
     private long usableBalance;
 }

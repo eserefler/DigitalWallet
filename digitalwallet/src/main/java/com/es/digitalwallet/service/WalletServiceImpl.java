@@ -64,7 +64,7 @@ public class WalletServiceImpl implements WalletService {
                 .findFirst()
                 .orElseThrow(TransactionNotFoundException::new);
 
-        wallet.approveTransaction(transaction, request.getIsApproved());
+        wallet.approveTransaction(transaction, request.isApproved());
         walletRepository.save(wallet);
     }
 

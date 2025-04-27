@@ -40,7 +40,6 @@ It allows customers and employees to manage wallets by creating wallets, deposit
 - Spring Security
 - PostgreSQL
 - Docker & Docker Compose
-- JUnit 5 (Unit Testing)
 - Maven
 
 ---
@@ -62,7 +61,7 @@ The project is structured as a multi-module Maven workspace, with three independ
 - **digitalwallet**
     - Manages wallets and transactions: create/list wallets, deposit, withdraw, list/approve transactions.
     - Enforces business rules (e.g. PENDING vs. APPROVED logic, wallet feature flags).
-    - Persists data in an embedded H2 database.
+    - Persists data in an PostgreSQL database.
 
 ### Request Flow
 
@@ -70,8 +69,8 @@ The project is structured as a multi-module Maven workspace, with three independ
 [ Client ]
      ↓
 [ API Gateway (gateway) ]  --– JWT validation
-     ↓            ↙              ↘
-[ Auth Service ]             [ Wallet Service ]
+     ↓                    ↘
+[ Auth Service ]            [ Wallet Service ]
      ↓                            ↓
   PostgreSQL DB              PostgreSQL DB
 
@@ -89,7 +88,6 @@ Before starting, make sure you have the following installed:
 - [Java 21](https://adoptium.net/)
 - [Maven 3.9+](https://maven.apache.org/)
 - [Docker](https://www.docker.com/)
-- [Docker Compose](https://docs.docker.com/compose/)
 
 ---
 
@@ -161,9 +159,19 @@ All API requests must be sent through the **API Gateway** (`http://localhost:808
 
 ### Notes
 
-- **/customers/login** returns a JWT token that must be used in the `Authorization` header for protected endpoints.
-- Deposits and withdrawals behave differently depending on the amount (threshold: 1000).
+- 💸 **Amount Field Information**:
+- The `amount` field is handled and stored as a `long` value.
+- The **last two digits represent the decimal part**.
+- Example:
+  - `amount = 12345` → represents **123.45**
+  - `amount = 500` → represents **5.00**
+- Deposits and withdrawals behave differently depending on the amount (threshold: 100000).
 - Wallet transactions must respect wallet settings like `activeForShopping` and `activeForWithdraw`.
+-  **Swagger UI** is available at: 
+- (http://localhost:8081/swagger-ui.html)
+- (http://localhost:8082/swagger-ui.html) 📄
+- You can view and test all API endpoints easily through the Swagger interface.
+- **/customers/login** returns a JWT token that must be used in the `Authorization` header for protected endpoints.
 
 Example Authorization Header after login:
 

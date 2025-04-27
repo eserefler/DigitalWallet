@@ -1,13 +1,12 @@
 package com.es.digitalwallet.domain.entity;
 
+import com.es.digitalwallet.constants.TransactionSettings;
 import com.es.digitalwallet.domain.enums.OppositePartyType;
 import com.es.digitalwallet.domain.enums.TransactionStatus;
 import com.es.digitalwallet.domain.enums.TransactionType;
 import com.es.digitalwallet.exception.TransactionCantBeApprovedOrDeniedException;
 import jakarta.persistence.*;
 import lombok.Getter;
-
-import java.util.UUID;
 
 @Entity
 @Table(name = "transaction")
@@ -40,11 +39,11 @@ public class Transaction  extends BaseEntity{
         transaction.type = type;
         transaction.oppositePartyType = oppositePartyType;
         transaction.oppositeParty = oppositeParty;
-        transaction.status = (amount > 100000 && type == TransactionType.DEPOSIT) ? TransactionStatus.PENDING : TransactionStatus.APPROVED;
+        transaction.status = (amount > TransactionSettings.MAX_TRANSACTION_AMOUNT) ? TransactionStatus.PENDING : TransactionStatus.APPROVED;
         return transaction;
     }
 
-    public void setStatus(Boolean isApproved) {
+    public void setStatus(boolean isApproved) {
         if (this.isPending()) {
            status = isApproved ? TransactionStatus.APPROVED : TransactionStatus.DENIED;
            return;
@@ -53,11 +52,11 @@ public class Transaction  extends BaseEntity{
         throw new TransactionCantBeApprovedOrDeniedException();
     }
 
-    public Boolean isApproved() {
+    public boolean isApproved() {
         return this.status == TransactionStatus.APPROVED;
     }
 
-    public Boolean isPending() {return this.status == TransactionStatus.PENDING;}
-    public Boolean isDepositTransaction() {return this.type == TransactionType.DEPOSIT;}
-    public Boolean isWithdrawTransaction() {return this.type == TransactionType.WITHDRAW;}
+    public boolean isPending() {return this.status == TransactionStatus.PENDING;}
+    public boolean isDepositTransaction() {return this.type == TransactionType.DEPOSIT;}
+    public boolean isWithdrawTransaction() {return this.type == TransactionType.WITHDRAW;}
 }

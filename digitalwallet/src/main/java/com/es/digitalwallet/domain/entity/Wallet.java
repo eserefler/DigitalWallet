@@ -39,7 +39,7 @@ public class Wallet extends BaseEntity {
     @OneToMany(mappedBy = "wallet", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Transaction> transactions;
 
-    public static Wallet of(UUID customerId, String walletName, Currency currency, Boolean activeForShopping, Boolean activeForWithdraw) {
+    public static Wallet of(UUID customerId, String walletName, Currency currency, boolean activeForShopping, boolean activeForWithdraw) {
         Wallet wallet = new Wallet();
         wallet.customerId = customerId;
         wallet.walletName = walletName;
@@ -81,7 +81,7 @@ public class Wallet extends BaseEntity {
         }
     }
 
-    public void approveTransaction(Transaction transaction, Boolean isApproved) {
+    public void approveTransaction(Transaction transaction, boolean isApproved) {
         transaction.setStatus(isApproved);
 
         if (isApproved) {
