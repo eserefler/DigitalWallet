@@ -15,6 +15,7 @@ public class WalletMapper {
         getWalletsResponse.setWallets(wallets.stream()
                 .map(wallet -> {
                     var walletDto = new WalletDto();
+                    walletDto.setId(wallet.getId());
                     walletDto.setWalletName(wallet.getWalletName());
                     walletDto.setCurency(wallet.getCurency().toString());
                     walletDto.setActiveForShopping(wallet.getActiveForShopping());

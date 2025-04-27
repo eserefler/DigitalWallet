@@ -7,6 +7,7 @@ import com.es.digitalwallet.model.request.WithdrawFromWalletRequest;
 import com.es.digitalwallet.model.response.GetWalletTransactionsResponse;
 import com.es.digitalwallet.model.response.GetWalletsResponse;
 import com.es.digitalwallet.service.WalletService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,7 @@ public class WalletController {
 
     @PostMapping()
     public ResponseEntity<Void> create(@RequestHeader("x-customer-id") UUID customerIdHeader,
-                                       @RequestBody CreateWalletRequest request) {
+                                       @Valid @RequestBody CreateWalletRequest request) {
         walletService.createWallet(customerIdHeader,request);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -37,7 +38,7 @@ public class WalletController {
     @PutMapping("/{walletId}/deposit")
     public ResponseEntity<Void> deposit(@RequestHeader("x-customer-id") UUID customerIdHeader,
                                         @PathVariable(required = true) UUID walletId,
-                                        @RequestBody DepositToWalletRequest request) {
+                                        @Valid @RequestBody DepositToWalletRequest request) {
         walletService.depositToWallet(customerIdHeader,walletId,request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -45,7 +46,7 @@ public class WalletController {
     @PutMapping("/{walletId}/withdraw")
     public ResponseEntity<Void> withdraw(@RequestHeader("x-customer-id") UUID customerIdHeader,
                                          @PathVariable UUID walletId,
-                                         @RequestBody WithdrawFromWalletRequest request) {
+                                         @Valid @RequestBody WithdrawFromWalletRequest request) {
         walletService.withdrawFromWallet(customerIdHeader,walletId,request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
