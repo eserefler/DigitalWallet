@@ -7,6 +7,8 @@ import com.es.digitalwallet.exception.WithdrawalAreNotAllowedException;
 import jakarta.persistence.*;
 import lombok.Getter;
 import com.es.digitalwallet.domain.enums.Currency;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -48,6 +50,7 @@ public class Wallet extends BaseEntity {
         wallet.activeForWithdraw = activeForWithdraw;
         wallet.balance = 0;
         wallet.usableBalance = 0;
+        wallet.transactions = new ArrayList<>();
         return wallet;
     }
 
